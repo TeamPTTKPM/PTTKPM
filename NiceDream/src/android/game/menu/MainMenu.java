@@ -1,5 +1,8 @@
 package android.game.menu;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.anddev.andengine.engine.Engine;
 import org.anddev.andengine.engine.camera.Camera;
 import org.anddev.andengine.engine.options.EngineOptions;
@@ -26,6 +29,11 @@ public class MainMenu extends BaseGameActivity {
 	private BitmapTextureAtlas _bg_BitmapTextureAtlas;
 	private TextureRegion _bg_TextureRegion;
 	private Sprite _bg_Sprite;
+	List<Menu> _listMenu;
+	
+	public MainMenu() {
+		_listMenu = new ArrayList<Menu>();
+	}
 
 	@Override
 	public Engine onLoadEngine() {
