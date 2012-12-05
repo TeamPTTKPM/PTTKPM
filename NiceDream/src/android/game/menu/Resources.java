@@ -1,6 +1,4 @@
 package android.game.menu;
 
-
-public class Menu{
-	
+public class Resources {
 }
