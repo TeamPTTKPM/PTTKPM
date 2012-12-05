@@ -55,8 +55,7 @@ public class MainMenu extends BaseGameActivity {
 	public Scene onLoadScene() {
 		mEngine.registerUpdateHandler(new FPSLogger());
 		_myScene = new Scene();
-		
-		_bg_Sprite = new Sprite(0, 0, _bg_TextureRegion);
+		_bg_Sprite = new Sprite(0, 0,_width, _height, _bg_TextureRegion);
 		_myScene.setBackground(new SpriteBackground(_bg_Sprite));
 		
 		return _myScene;
