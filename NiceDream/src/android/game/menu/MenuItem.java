@@ -32,15 +32,15 @@ public class MenuItem {
 		_font = font;
 	}
 
-	public void loadStringResource() {
-		//
-	}
-
 	public void render(Scene scene)
 	{
 		_menuItem_Sprite = new Sprite(_x, _y, _menuItem_TextureRegion);
-		Text text = new Text(0, 0, _font, "New Game");
+		_menuItem_Sprite.setScaleY(1.5f);
+		int text_X = (_x + (_menuItem_TextureRegion.getWidth() - _font.getStringWidth(_nameMenuItem))/2);
+		int text_Y = (_y + (_menuItem_TextureRegion.getHeight() - _font.getLineHeight())/2);
+		Text text = new Text(text_X, text_Y, _font, _nameMenuItem);
 		scene.attachChild(_menuItem_Sprite);
+		scene.attachChild(text);
 	}
 	
 	public TextureRegion get_menuItemTextureRegion() {

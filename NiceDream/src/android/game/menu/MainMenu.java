@@ -13,12 +13,15 @@ import org.anddev.andengine.entity.scene.Scene;
 import org.anddev.andengine.entity.scene.background.SpriteBackground;
 import org.anddev.andengine.entity.sprite.Sprite;
 import org.anddev.andengine.entity.util.FPSLogger;
+import org.anddev.andengine.opengl.font.Font;
 import org.anddev.andengine.opengl.texture.TextureOptions;
 import org.anddev.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.anddev.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
 import org.anddev.andengine.opengl.texture.region.TextureRegion;
 import org.anddev.andengine.ui.activity.BaseGameActivity;
 
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.view.Display;
 
 public class MainMenu extends BaseGameActivity {
@@ -35,6 +38,10 @@ public class MainMenu extends BaseGameActivity {
 	List<String> _listNameMenuItem;
 	List<MenuItem> _listMenu;
 	
+	private BitmapTextureAtlas _fontTexture;
+	private Font _font;
+
+	
 	
 	public MainMenu() {
 		_listMenu = new ArrayList<MenuItem>();
@@ -43,7 +50,10 @@ public class MainMenu extends BaseGameActivity {
 	
 	public void loadNameMenuItem()
 	{
-		
+		_listNameMenuItem.add(getString(R.string.newgame));
+		_listNameMenuItem.add(getString(R.string.options));
+		_listNameMenuItem.add(getString(R.string.about));
+		_listNameMenuItem.add(getString(R.string.exit));
 	}
 
 	@Override
@@ -58,20 +68,29 @@ public class MainMenu extends BaseGameActivity {
 				ScreenOrientation.LANDSCAPE, new FillResolutionPolicy(), _myCamera).setNeedsMusic(
 				true).setNeedsSound(true);
 		return new Engine(pEngineOptions);
+		
 	}
 
 	@Override
 	public void onLoadResources() {
+		
+		// Load Language
+		loadNameMenuItem();
+		
+		// load Background
 		_bg_BitmapTextureAtlas = new BitmapTextureAtlas(1024, 512,
 				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
 		_bg_TextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(_bg_BitmapTextureAtlas, this, "background.png", 0, 0);
-		
 		mEngine.getTextureManager().loadTexture(_bg_BitmapTextureAtlas);
 		
 		
 		// Load Font
-		
+		_fontTexture = new BitmapTextureAtlas(256, 256, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+	    _font = new Font(this._fontTexture, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 30, true, Color.BLACK);
+	    mEngine.getTextureManager().loadTexture(this._fontTexture);
+	    mEngine.getFontManager().loadFont(this._font);
+	    
 		// Load MenuItem
 		int centerX = 0;
 		
@@ -86,32 +105,40 @@ public class MainMenu extends BaseGameActivity {
 		
 		centerX = (_width - _menuItem_TextureRegion.getWidth())/2;
 		
-		MenuItem newMenuItem1 = new MenuItem(this, mEngine, _menuItem_TextureRegion);
+		for (int i = 0; i < _listNameMenuItem.size(); i++) {
+			MenuItem newMenuItem = new MenuItem(this, mEngine, _menuItem_TextureRegion, _font);
+			String name = _listNameMenuItem.get(i);
+			newMenuItem.set_nameMenuItem(name);
+			newMenuItem.setX(centerX);
+			newMenuItem.setY(80 + 100 * i);
+			_listMenu.add(newMenuItem);
+		}
+		/*MenuItem newMenuItem1 = new MenuItem(this, mEngine, _menuItem_TextureRegion, _font);
 		newMenuItem1.set_nameMenuItem("New Game");
 		newMenuItem1.setX(centerX);
 		newMenuItem1.setY(50);
 		_listMenu.add(newMenuItem1);
 		
-		MenuItem newMenuItem2 = new MenuItem(this, mEngine, _menuItem_TextureRegion);
+		MenuItem newMenuItem2 = new MenuItem(this, mEngine, _menuItem_TextureRegion, _font);
 		
 		newMenuItem2.set_nameMenuItem("Options");
 		newMenuItem2.setX(centerX);
 		newMenuItem2.setY(150);
 		_listMenu.add(newMenuItem2);
 		
-		MenuItem newMenuItem3 = new MenuItem(this, mEngine, _menuItem_TextureRegion);
+		MenuItem newMenuItem3 = new MenuItem(this, mEngine, _menuItem_TextureRegion, _font);
 		
 		newMenuItem3.set_nameMenuItem("About");
 		newMenuItem3.setX(centerX);
 		newMenuItem3.setY(250);
 		_listMenu.add(newMenuItem3);
 		
-		MenuItem newMenuItem4 = new MenuItem(this, mEngine, _menuItem_TextureRegion);
+		MenuItem newMenuItem4 = new MenuItem(this, mEngine, _menuItem_TextureRegion, _font);
 		
 		newMenuItem4.set_nameMenuItem("Exit");
 		newMenuItem4.setX(centerX);
 		newMenuItem4.setY(350);
-		_listMenu.add(newMenuItem4);
+		_listMenu.add(newMenuItem4);*/
 	}
 
 	@Override
