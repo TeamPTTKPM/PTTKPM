@@ -1,24 +1,11 @@
 package android.game.menu;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-
-import javax.microedition.khronos.opengles.GL10;
-
-import org.anddev.andengine.engine.Engine;
-import org.anddev.andengine.engine.camera.Camera;
-import org.anddev.andengine.engine.options.EngineOptions;
-import org.anddev.andengine.engine.options.EngineOptions.ScreenOrientation;
-import org.anddev.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
 import org.anddev.andengine.entity.scene.Scene;
 import org.anddev.andengine.entity.scene.background.SpriteBackground;
 import org.anddev.andengine.entity.scene.menu.MenuScene;
 import org.anddev.andengine.entity.scene.menu.MenuScene.IOnMenuItemClickListener;
-import org.anddev.andengine.entity.scene.menu.animator.SlideMenuAnimator;
 import org.anddev.andengine.entity.scene.menu.item.IMenuItem;
 import org.anddev.andengine.entity.scene.menu.item.SpriteMenuItem;
-import org.anddev.andengine.entity.scene.menu.item.TextMenuItem;
 import org.anddev.andengine.entity.scene.menu.item.decorator.ScaleMenuItemDecorator;
 import org.anddev.andengine.entity.sprite.Sprite;
 import org.anddev.andengine.entity.text.Text;
@@ -29,17 +16,12 @@ import org.anddev.andengine.opengl.texture.TextureOptions;
 import org.anddev.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.anddev.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
 import org.anddev.andengine.opengl.texture.region.TextureRegion;
-import org.anddev.andengine.ui.activity.BaseGameActivity;
 
+import android.content.Intent;
 import android.graphics.Color;
-import android.view.Display;
 
-public class MainMenu extends BaseGameActivity implements
+public class MainMenu extends Menu implements
 		IOnMenuItemClickListener {
-
-	private Camera _myCamera;
-	private Scene _myScene;
-	private int _width, _height;
 
 	// Background
 	private BitmapTextureAtlas _bg_BitmapTextureAtlas;
@@ -49,7 +31,7 @@ public class MainMenu extends BaseGameActivity implements
 	// IMenuItem
 	private BitmapTextureAtlas _menuItem_TextureAtlas;
 	private TextureRegion _menuItem_TextureRegion;
-	List<String> _listNameMenuItem;
+	String[] _listNameMenuItem;
 
 	// Font
 	private BitmapTextureAtlas _fontTexture;
@@ -57,32 +39,26 @@ public class MainMenu extends BaseGameActivity implements
 
 	// MenuScene
 	MenuScene _menuScene;
+	
 
+	protected static final int MENU_NEWGAME = 0;
+	protected static final int MENU_OPTIONS = MENU_NEWGAME + 1;
+	protected static final int MENU_ABOUT = MENU_OPTIONS + 1;
+	protected static final int MENU_QUIT = MENU_ABOUT + 1;
+	
+	
+	/*protected static final int MENU_SCORES = MENU_NEWGAME + 1;
+	protected static final int MENU_HELP = MENU_OPTIONS + 1;*/
+	
 	public MainMenu() {
-		_listNameMenuItem = new ArrayList<String>();
+		_listNameMenuItem = new String[MENU_QUIT + 1];
 	}
 
 	private void loadNameMenuItem() {
-		_listNameMenuItem.add(getString(R.string.newgame));
-		_listNameMenuItem.add(getString(R.string.options));
-		_listNameMenuItem.add(getString(R.string.about));
-		_listNameMenuItem.add(getString(R.string.exit));
-	}
-
-	@Override
-	public Engine onLoadEngine() {
-		final Display display = getWindowManager().getDefaultDisplay();
-		_width = display.getWidth();
-		_height = display.getHeight();
-
-		_myCamera = new Camera(0, 0, _width, _height);
-
-		EngineOptions pEngineOptions = new EngineOptions(true,
-				ScreenOrientation.LANDSCAPE, new RatioResolutionPolicy(_width,
-						_height), _myCamera).setNeedsMusic(true).setNeedsSound(
-				true);
-		return new Engine(pEngineOptions);
-
+		_listNameMenuItem[MENU_NEWGAME] = getString(R.string.newgame);
+		_listNameMenuItem[MENU_OPTIONS] = getString(R.string.options);
+		_listNameMenuItem[MENU_ABOUT] = getString(R.string.about);
+		_listNameMenuItem[MENU_QUIT] = getString(R.string.exit);
 	}
 
 	@Override
@@ -107,16 +83,10 @@ public class MainMenu extends BaseGameActivity implements
 		 _myScene.setBackground(new SpriteBackground(_bg_Sprite));
 
 		// add object
-		//_myScene.getLastChild().attachChild(_bg_Sprite);
 		_myScene.setChildScene(_menuScene);
 		return _myScene;
 	}
-
-	@Override
-	public void onLoadComplete() {
-
-	}
-
+	
 	// =====================================================================
 	// Functions
 	// =====================================================================
@@ -155,16 +125,16 @@ public class MainMenu extends BaseGameActivity implements
 
 	private void createStaticMenuScene() {
 		_menuScene = new MenuScene(_myCamera);
-
-		for (int i = 0; i < _listNameMenuItem.size(); i++) {
-
+		
+		for (int i = MENU_NEWGAME; i <= MENU_QUIT; i++) {
+			
 			SpriteMenuItem newMenuItem = new SpriteMenuItem(i,
 					_menuItem_TextureRegion);
 			int cenX = (int) (newMenuItem.getWidth() - _font
-					.getStringWidth(_listNameMenuItem.get(i))) / 2;
+					.getStringWidth(_listNameMenuItem[i])) / 2;
 			int cenY = (int) (newMenuItem.getHeight() - _font.getLineHeight()) / 2;
 
-			Text text = new Text(cenX, cenY, _font, _listNameMenuItem.get(i));
+			Text text = new Text(cenX, cenY, _font, _listNameMenuItem[i]);
 			newMenuItem.attachChild(text);
 
 			_menuScene.addMenuItem(new ScaleMenuItemDecorator(newMenuItem,
@@ -181,6 +151,20 @@ public class MainMenu extends BaseGameActivity implements
 	@Override
 	public boolean onMenuItemClicked(MenuScene pMenuScene, IMenuItem pMenuItem,
 			float pMenuItemLocalX, float pMenuItemLocalY) {
+		
+		switch (pMenuItem.getID()) {
+		case MENU_NEWGAME:
+			Intent intent = new Intent(this, PlayGame.class);
+			startActivity(intent);
+			break;
+		case MENU_OPTIONS:
+			break;
+		case MENU_ABOUT:
+			break;
+		case MENU_QUIT:
+			this.finish();
+			break;
+		}
 		return false;
 	}
 }
