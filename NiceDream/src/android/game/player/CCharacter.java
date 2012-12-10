@@ -1,7 +1,6 @@
 package android.game.player;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 import org.anddev.andengine.engine.Engine;
 import org.anddev.andengine.entity.scene.Scene;
@@ -13,20 +12,24 @@ import org.anddev.andengine.opengl.texture.region.TiledTextureRegion;
 
 import android.content.Context;
 import android.game.interfaceSprite.ISprite;
-import android.game.items.Items;
 
 public class CCharacter implements ISprite {
 
 	private Scene _myScene ;
 	
 	private int MOVE_STATE = PLAYER_MOVE_STATE.STAND;
-	private final long[] DURATION = { 40, 40, 40, 40, 40, 40, 40, 40 };
-	private final int[] ANIMATED_DOWN = { 0, 1, 2, 3, 4, 5, 6, 7 };
+	private long[] DURATION;
+	/*private final int[] ANIMATED_DOWN = { 0, 1, 2, 3, 4, 5, 6, 7 };
 	private final int[] ANIMATED_UP = { 8, 9, 10, 11, 12, 13, 14, 15 };
-	private final int[] ANIMATED_RIGHT = { 16, 17, 18, 19, 20, 21, 21, 23 };
-	private final int[] ANIMATED_LEFT = { 24, 25, 26, 27, 28, 29, 30, 31 };
+	private final int[] ANIMATED_RIGHT = { 16, 17, 18, 19, 20, 21, 22, 23 };
+	private final int[] ANIMATED_LEFT = { 24, 25, 26, 27, 28, 29, 30, 31 };*/
+	
+	private final int[] ANIMATED_DOWN = { 0, 2, 4, 7 };
+	private final int[] ANIMATED_UP = { 8, 10, 12, 15};
+	private final int[] ANIMATED_RIGHT = { 16, 18,  20, 23};
+	private final int[] ANIMATED_LEFT = { 24,26, 28, 31 };
 
-	private int _speed = 5;
+	private int _speed = 12;
 
 	private float _positionX = 0;
 	private float _positionY = 0;
@@ -40,14 +43,15 @@ public class CCharacter implements ISprite {
 	private TiledTextureRegion _ttr_character_move;
 	private AnimatedSprite _as_character_move;
 
-	private List<Items> _items;
+	//private List<Items> _items;
 
 	public CCharacter() {
-		_items = new ArrayList<Items>();
+		//_items = new ArrayList<Items>();
+		DURATION = new long[4];
+		Arrays.fill(DURATION, 300);
 	}
 
-	// =======================================|| onLoadResources
-	// ||================================
+	// ========|| onLoadResources ||===============
 	@Override
 	public void onLoadResources(Engine engine, Context context) {
 
@@ -99,12 +103,12 @@ public class CCharacter implements ISprite {
 
 			if(_myScene.getChildIndex(_as_character_stand) < 0)
 			{
-				_as_character_move.setPosition(_positionX, _positionY);
+				_as_character_stand.setPosition(_positionX, _positionY);
 				_myScene.attachChild(_as_character_stand);
 			}
 			
 			
-			_as_character_stand.animate(40);
+			_as_character_stand.animate(300);
 		} else {
 
 			if(_myScene.getChildIndex(_as_character_stand) >= 0)
@@ -120,31 +124,35 @@ public class CCharacter implements ISprite {
 			
 			switch (MOVE_STATE) {
 			case PLAYER_MOVE_STATE.MOVE_LEFT: {
-				_as_character_move.animate(DURATION, ANIMATED_LEFT, 1000);
+				_as_character_move.animate(DURATION, ANIMATED_LEFT, 1);
 				break;
 			}
 			case PLAYER_MOVE_STATE.MOVE_RIGHT: {
-				_as_character_move.animate(DURATION, ANIMATED_RIGHT, 1000);
+				_as_character_move.animate(DURATION, ANIMATED_RIGHT, 1);
 				break;
 			}
 			case PLAYER_MOVE_STATE.MOVE_UP: {
-				_as_character_move.animate(DURATION, ANIMATED_UP, 1000);
+				_as_character_move.animate(DURATION, ANIMATED_UP, 1);
 				break;
 			}
 			case PLAYER_MOVE_STATE.MOVE_DOWN: {
-				_as_character_move.animate(DURATION, ANIMATED_DOWN, 1000);
+				_as_character_move.animate(DURATION, ANIMATED_DOWN, 1);
 				break;
 			}
 			case PLAYER_MOVE_STATE.UN_MOVE_LEFT: {
+				//_as_character_move.animate(new long[]{100}, new int[]{24}, 1);;
 				break;
 			}
 			case PLAYER_MOVE_STATE.UN_MOVE_RIGHT: {
+				//_as_character_move.animate(new long[]{100}, new int[]{16}, 1);
 				break;
 			}
 			case PLAYER_MOVE_STATE.UN_MOVE_UP: {
+				//_as_character_move.animate(new long[]{100}, new int[]{8}, 1);
 				break;
 			}
 			case PLAYER_MOVE_STATE.UN_MOVE_DOWN: {
+				//_as_character_move.animate(new long[]{100}, new int[]{0}, 1);
 				break;
 			}
 			}

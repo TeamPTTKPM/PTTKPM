@@ -2,21 +2,20 @@ package android.game.menu;
 
 import java.util.ArrayList;
 
-import org.anddev.andengine.engine.camera.hud.controls.DigitalOnScreenControl;
 import org.anddev.andengine.entity.layer.tiled.tmx.TMXLayer;
 import org.anddev.andengine.entity.layer.tiled.tmx.TMXTile;
 import org.anddev.andengine.entity.layer.tiled.tmx.TMXTiledMap;
 import org.anddev.andengine.entity.scene.Scene;
-import org.anddev.andengine.entity.scene.Scene.IOnSceneTouchListener;
 import org.anddev.andengine.entity.scene.background.ColorBackground;
 import org.anddev.andengine.entity.util.FPSLogger;
-import org.anddev.andengine.input.touch.TouchEvent;
 
+import android.game.controller.Controller;
+import android.game.controller.Controller.IOnControllerListener;
 import android.game.map.Map;
 import android.game.player.CCharacter;
 import android.game.player.PLAYER_MOVE_STATE;
 
-public class PlayGame extends Menu implements IOnSceneTouchListener {
+public class PlayGame extends Menu {
 
 	public class Area {
 		public static final int NONE = 0;
@@ -26,16 +25,19 @@ public class PlayGame extends Menu implements IOnSceneTouchListener {
 		public static final int BOTTOM = 4;
 	}
 
+	private Controller _myController;
+
 	private CCharacter _character;
 
 	private TMXTiledMap _tmxTiledMap;
 	private TMXLayer _obstructionTMXLayer;
 	private TMXTile tmxTiled;
 
-	private DigitalOnScreenControl _digitalOnScreenControl;
+	int _resultArea = -1;
 
 	public PlayGame() {
 		_character = new CCharacter();
+
 	}
 
 	@Override
@@ -74,67 +76,51 @@ public class PlayGame extends Menu implements IOnSceneTouchListener {
 		}
 	}
 
-	
-	@Override
-	public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
-		if (pSceneTouchEvent.getAction() == TouchEvent.ACTION_DOWN) {
-			int result = getAreaTouch(pSceneTouchEvent.getX(), pSceneTouchEvent.getY());
-			
-			switch (result) {
-			case Area.TOP:
-				_character.setMoveState(PLAYER_MOVE_STATE.MOVE_UP);
-				_character.moveUp();
-				break;
-			case Area.BOTTOM:
-				_character.setMoveState(PLAYER_MOVE_STATE.MOVE_DOWN);
-				_character.moveDown();
-				break;
-			case Area.CENTER_LEFT:
-				_character.setMoveState(PLAYER_MOVE_STATE.MOVE_LEFT);
-				_character.moveLeft();
-				break;
-			case Area.CENTER_RIGHT:
-				_character.setMoveState(PLAYER_MOVE_STATE.MOVE_RIGHT);
-				_character.moveRight();
-				break;
-
-			default:
-				break;
-			}
-			
-			if (pSceneTouchEvent.getAction() == TouchEvent.ACTION_UP) {
-				
-				_character.setMoveState(PLAYER_MOVE_STATE.STAND);
-			}
-		}
-		return false;
-	}
-
-	private int getAreaTouch(float fX, float fY) {
-		float x1 = _width / 4;
-		float x2 = x1 * 3;
-
-		float y1 = _height / 3;
-		float y2 = y1 * 2;
-
-		if (!(fX > x1 && fX < x2)) {
-			if (fY < y1) {
-				return Area.TOP;
-			} else if (fY > y2) {
-				return Area.BOTTOM;
-			} else {
-				if (fX < x1) {
-					return Area.CENTER_LEFT;
-				} else {
-					return Area.CENTER_RIGHT;
-				}
-			}
-		}
-		return Area.NONE;
-	}
-
 	private void input() {
-		_myScene.setOnSceneTouchListenerBindingEnabled(true);
-		_myScene.setOnSceneTouchListener(this);
+		_myController = new Controller(_width, _height, _myScene, 0.1f,
+				new IOnControllerListener() {
+					@Override
+					public void onControlChange(Controller controller,
+							float pValueX, float pValueY, int iResultArea) {
+
+						switch (iResultArea) {
+						case Area.TOP:
+							_character.setMoveState(PLAYER_MOVE_STATE.MOVE_UP);
+							_character.moveUp();
+							break;
+						case Area.BOTTOM:
+							_character.setMoveState(PLAYER_MOVE_STATE.MOVE_DOWN);
+							_character.moveDown();
+							break;
+						case Area.CENTER_LEFT:
+							_character.setMoveState(PLAYER_MOVE_STATE.MOVE_LEFT);
+							_character.moveLeft();
+							break;
+						case Area.CENTER_RIGHT:
+							_character.setMoveState(PLAYER_MOVE_STATE.MOVE_RIGHT);
+							_character.moveRight();
+							break;
+						case Area.NONE:
+							/*switch (_character.getMoveState()) {
+							case PLAYER_MOVE_STATE.MOVE_UP: 
+								_character.setMoveState(PLAYER_MOVE_STATE.UN_MOVE_UP);
+								break;
+							case PLAYER_MOVE_STATE.MOVE_DOWN:
+								_character.setMoveState(PLAYER_MOVE_STATE.UN_MOVE_DOWN);
+								break;
+							case PLAYER_MOVE_STATE.MOVE_LEFT:
+								_character.setMoveState(PLAYER_MOVE_STATE.UN_MOVE_LEFT);
+								break;
+							case PLAYER_MOVE_STATE.MOVE_RIGHT:
+								_character.setMoveState(PLAYER_MOVE_STATE.UN_MOVE_RIGHT);
+								break;
+							default:
+								break;
+							}*/
+						}
+					}
+				});
 	}
+
+	
 }
